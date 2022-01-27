@@ -47,28 +47,11 @@
                 bottom: 0;
                 left: 0;
                 background: var(--yellow-500);
-            }
-
-            // &:focus {
-            //     color: var(--gray-100);
-            //     border-bottom: 3px solid var(--yellow-500);   
-            // }
+            }            
         }
-    }
-
+    }   
+    
     button {
-        background-color: #1F2729;
-        color: var(--gray-100);
-        padding: 0 1.5rem 0 1rem;
-        height: 3rem;
-        border-radius: 100px;
-        border: none;
-
-        display: flex;
-        align-items: center;
-        img{
-            margin-right: 1rem;
-        }
-
+        margin-left: auto;
     }
 }
