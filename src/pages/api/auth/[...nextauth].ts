@@ -24,7 +24,7 @@ export default NextAuth({
 
       try { 
 
-        const usuario = await fauna.query(
+        await fauna.query(
           q.If(
             q.Not(
               q.Exists(
@@ -47,7 +47,7 @@ export default NextAuth({
           )          
         )
         
-      } catch(error) {        
+      } catch(err) {        
         return false
       }
       

@@ -49,7 +49,6 @@ export default async (req: NextApiRequest, res:NextApiResponse) => {
                 customerId = stripeCustomer.id;
             }
 
-    
             const stripeCheckoutSession = await stripe.checkout.sessions.create({
                 customer: customerId,
                 payment_method_types: ['card'],
@@ -64,11 +63,9 @@ export default async (req: NextApiRequest, res:NextApiResponse) => {
             })
     
             return res.status(200).json( { sessionId: stripeCheckoutSession.id })
-        } catch (error) {
-            console.log(error);
+        } catch (err) {
+            console.log(err.message);
         }
-
-
     } else {
         res.setHeader('Allow', 'POST');
         res.status(405).end('Method not allowed')
