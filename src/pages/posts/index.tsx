@@ -3,8 +3,16 @@ import Head from 'next/head';
 import { getPrismicClient } from '../../services/prismic';
 import styles from './styles.module.scss'
 import * as prismic from '@prismicio/client'
+import { RichText } from 'prismic-dom'
 
-export default function Posts() {
+type Post = {
+    slug: string;
+    type: string;
+    excerpt: string;
+    updatedAt: string;
+}
+
+export default function Posts({ posts }) {
     return (
         <>
             <Head>
@@ -13,21 +21,14 @@ export default function Posts() {
 
             <main className={styles.container}>
                 <div className={styles.posts}>
-                    <a href="">
-                        <time>12 de março de 2021</time>
-                        <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>                        
-                        <p>Por se tratar de uma tecnologia relativamente antiga, com mais de dez anos, a discussão se o jQuery vai morrer ou não foi, inclusive, tema do nosso segundo Faladev, com Diego Fernandes.</p>
-                    </a>
-                    <a href="">
-                        <time>12 de março de 2021</time>
-                        <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>                        
-                        <p>Por se tratar de uma tecnologia relativamente antiga, com mais de dez anos, a discussão se o jQuery vai morrer ou não foi, inclusive, tema do nosso segundo Faladev, com Diego Fernandes.</p>
-                    </a>
-                    <a href="">
-                        <time>12 de março de 2021</time>
-                        <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>                        
-                        <p>Por se tratar de uma tecnologia relativamente antiga, com mais de dez anos, a discussão se o jQuery vai morrer ou não foi, inclusive, tema do nosso segundo Faladev, com Diego Fernandes.</p>
-                    </a>
+                    {posts.map(post => (
+                        <a key={post.slug} href="#">
+                            <time>{post.updatedAt}</time>
+                            <strong>{post.title}</strong>                        
+                            <p>{post.excerpt}</p>
+                        </a>
+                    ))}
+                    
                 </div>
             </main>
         </>
@@ -38,15 +39,29 @@ export const getStaticProps:GetStaticProps = async () => {
     const client = getPrismicClient()
 
     
-    const response = await client.get({
+    const response = await client.get<any>({            
         predicates: prismic.predicate.at('document.type', 'post'),
         fetch: ['post.title', 'post.content'],
         pageSize: 100,
+    })        
+    
+    const posts = response.results.map(post => {
+        return { 
+            slug: post.uid,
+            title: RichText.asText(post.data.title),
+            excerpt: post.data.content.find(content => content.type === 'paragraph')?.text ?? '',
+            updatedAt: new Date(post.last_publication_date).toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            })
+        }
     })
 
-    console.log(JSON.stringify(response, null, 2));        
-
     return { 
-        props: {}
+        props: {
+            posts
+        },
+        revalidate: 60 * 60 * 1, // 1 hour
     }
 }
