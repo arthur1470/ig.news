@@ -1,4 +1,5 @@
 import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import { api } from '../../services/api';
 import { getStripeJs } from '../../services/stripe-js';
 import styles from './styles.module.scss';
@@ -7,13 +8,21 @@ interface SubscribeButtonProps {
     productId: string;
 }
 
-export function SubscribeButton({ productId }) {
+export function SubscribeButton({ productId }: SubscribeButtonProps) {
     const {data:session} = useSession();
+    const router = useRouter();
 
     async function handleSubscribe() {
         if (!session) {
             signIn('github')
             return
+        }
+        
+        console.log('Active Subscription: ',session.activeSubscription);
+
+        if(session.activeSubscription) {
+            router.push('/posts');
+            return;
         }
         
         try {

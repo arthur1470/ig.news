@@ -16,7 +16,7 @@ export async function saveSubscription(
                     q.Index('user_by_stripe_customer_id'),
                     customerId
                 )
-            ),        
+            ),
         )
     )
     
@@ -29,7 +29,7 @@ export async function saveSubscription(
         price_id: subscription.items.data[0].price.id,
     }
     
-    if(createAction) {    
+    if(createAction) {
         await fauna.query(
             q.If(
                 q.Not(
